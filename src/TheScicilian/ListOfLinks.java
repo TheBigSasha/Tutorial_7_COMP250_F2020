@@ -1,8 +1,9 @@
 package TheScicilian;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class ListOfLinks<E> {
+public class ListOfLinks<E> implements Iterable<E>{
     private ListNode<E> head;
     private int size;
 
@@ -112,6 +113,49 @@ public class ListOfLinks<E> {
 
         }
         return sb.toString();                              //return our thing
+    }
+
+    /**
+     * Returns an iterator over elements of type {@code T}.
+     *
+     * @return an Iterator.
+     */
+    @Override
+    public Iterator<E> iterator() {
+        return new ListOfLinksIterator();
+    }
+
+    class ListOfLinksIterator implements Iterator<E>{
+        int counter = 0;
+
+        /**
+         * Returns {@code true} if the iteration has more elements.
+         * (In other words, returns {@code true} if {@link #next} would
+         * return an element rather than throwing an exception.)
+         *
+         * @return {@code true} if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
+            if(counter < size()){
+
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         */
+        @Override
+        public E next()  {
+            E data = get(counter);      //This is slow and bad!
+            counter++;
+            return data;
+        }
     }
 
 

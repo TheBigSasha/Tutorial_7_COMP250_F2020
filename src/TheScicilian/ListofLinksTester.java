@@ -5,24 +5,8 @@ import java.util.Scanner;
 
 public class ListofLinksTester {
     public static void main(String args[]){
-        for(int i = 0; i < 1500; i++){
-            if(!testRemoveFromSizeN(i)) System.out.println("Test failed to remove at size " + i);
-        }
-
-        ListOfLinks<String> tested = new ListOfLinks<>();
-        for(int i = 0; i < 100; i++){
-            long startTime = System.nanoTime();
-            fillList(i*15 + 1, tested);
-            long endTime = System.nanoTime();
-            long startTime2 = System.nanoTime();
-            Object first = tested.getFirst();
-            long endTime2 = System.nanoTime();
-            System.out.println("Slow one, probably O(n) : " + (endTime - startTime) + "             Fast one O(1) : " + (endTime2 - startTime2));
-
-
-            tested = new ListOfLinks<>();
-        }
-
+       testStackMethods();
+       testQueueMethods();
 
     }
 
@@ -102,7 +86,36 @@ public class ListofLinksTester {
     }
 
     private static void testStackMethods(){
+        Stack<Integer> nums = new Stack<>();
+        Integer one = 1;
+        Integer two = 2;
+        Integer three = 3;
+        nums.push(one);
+        nums.push(two);
+        nums.push(three);
+        for(Integer i : nums){
+            System.out.println(i);
+        }
+        for(int i = 0; i < nums.size(); i++){
+            System.out.println(nums.get(i));
+        }
+        while(!nums.isEmpty()) {
+            System.out.println(nums.pop());
+        }
+    }
 
+    private static void testQueueMethods(){
+        Queue<Integer> nums = new Queue<>();
+        Integer one = 1;
+        Integer two = 2;
+        Integer three = 3;
+        nums.enqueue(one);
+        nums.enqueue(two);
+        nums.enqueue(three);
+
+        while(!nums.isEmpty()) {
+            System.out.println(nums.dequeue());
+        }
     }
 
 }
