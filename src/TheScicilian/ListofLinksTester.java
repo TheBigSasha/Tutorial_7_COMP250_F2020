@@ -93,4 +93,16 @@ public class ListofLinksTester {
         }
     }
 
+    private static long testIterationSpeed(int intensity){
+        return 0L;
+    }
+
+    private static void testIterationFunction(){
+
+    }
+
+    private static void testStackMethods(){
+
+    }
+
 }
