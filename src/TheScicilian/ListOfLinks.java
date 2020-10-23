@@ -1,13 +1,16 @@
 package TheScicilian;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class ListOfLinks<E> {
+public class ListOfLinks<E> implements Iterable<E>{
     private ListNode<E> head;
-    private int size;
+    private ListNode<E> tail;
+    private int size = 0;
 
     public ListOfLinks() {
         head = null;
+        tail = null;
         size = 0;
     }
 
@@ -19,6 +22,8 @@ public class ListOfLinks<E> {
     public ListNode<E> getFirst() {
         return head;
     }
+
+    public E getLast(){return tail.getData();};
 
     public int size() {                                          //Returns the number of elements in the list by iterating thru and counting
         return size;
@@ -59,16 +64,66 @@ public class ListOfLinks<E> {
         return null;
     }
 
-    public void add(E data) {                                    //sets head if head is null, else adds a node'
-        ListNode<E> newNode = new ListNode<>(data);         // We create a new node from the data we are given
-        if(this.isEmpty() || this.head == null){
-            this.head = newNode;
-            size++;
-            return;
+    public E getFaster(int index) throws IndexOutOfBoundsException{
+        if(index > this.size() - 1 || index < 0) throw new IndexOutOfBoundsException("Index " + index + " out of bounds for list of size " + size());
+
+        int counter;
+        E data = null;
+        ListNode<E> temp;
+        if(index > size/2){
+            counter = size - 1;
+            temp = tail;
+            while(temp != null){
+                if(counter == index){
+                    return temp.getData();
+                }
+                temp = temp.getPrevious();
+                counter--;      //There was a mistake here in the tutorial!
+            }
+        }else{
+
+            counter = 0;
+            temp = head;
+            while(temp != null){
+                if(counter == index){
+                    return temp.getData();
+                }
+                temp = temp.next;
+                counter++;
+            }
         }
-        getLastNode().setNext(newNode);                     // We go to the last node and change the reference from null to the new node
-        size++;                                             // We track our size
+        return null;
     }
+
+    public void addFirst(E data){
+        ListNode<E> newNode = new ListNode<>(data);
+        if(head == null){
+            head = newNode;
+            tail = head;
+        }else{
+            head.setPrevious(newNode);
+            newNode.setNext(head);
+            newNode.setPrevious(null);
+            head = newNode;
+        }
+        size++;
+    }
+
+    public void addLast(E data){
+        ListNode<E> newNode = new ListNode<>(data);
+        if(head == null){
+            head = newNode;
+            tail = head;
+        }else{
+            tail.setNext(newNode);
+            newNode.setPrevious(tail);
+            newNode.setNext(null);
+            tail = newNode;
+        }
+        size++;
+    }
+
+
 
 
     private ListNode<E> getLastNode() {                               //iterates thru the list till the node's next is null (last node)
@@ -79,9 +134,6 @@ public class ListOfLinks<E> {
         return temp;
     }
 
-    public E getLast(){
-        return get(size() - 1);
-    }
 
     public E pop(){     //Slow and bad, you should use a doubly linked list :)
         E data = getLast();
@@ -95,8 +147,25 @@ public class ListOfLinks<E> {
         }
         if(this.size == 1){
             this.head = null;
+            this.tail = null;
         }else {
-            this.getNode(size() - 2).setNext(null);
+            this.tail = this.tail.getPrevious();
+            this.tail.setNext(null);
+
+        }
+        size--;
+    }
+
+    public void removeFirst() {
+        if(this.size == 0){
+            return;
+        }
+        if(this.size == 1){
+            this.head = null;
+            this.tail = null;
+        }else {
+            this.head = this.head.next();
+            this.head.setPrevious(null);
         }
         size--;
     }
@@ -114,9 +183,63 @@ public class ListOfLinks<E> {
         return sb.toString();                              //return our thing
     }
 
+    /**
+     * Returns an iterator over elements of type {@code T}.
+     *
+     * @return an Iterator.
+     */
+    @Override
+    public Iterator<E> iterator() {
+        return new ListOfLinksIterator();
+    }
 
-    private class ListNode<E> {                                  //List node: stores a bit of data and a pointer to next
+    class ListOfLinksIterator implements Iterator<E>{
+        int index;
+
+        public ListOfLinksIterator(){
+            index = 0;
+        }
+
+        /**
+         * Returns {@code true} if the iteration has more elements.
+         * (In other words, returns {@code true} if {@link #next} would
+         * return an element rather than throwing an exception.)
+         *
+         * @return {@code true} if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
+            return index < size();
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         * @throws  if the iteration has no more elements
+         */
+        @Override
+        public E next() {
+            E data = getFaster(index);
+            index++;
+            return data;
+        }
+    }
+
+
+    protected class ListNode<E> {                                  //List node: stores a bit of data and a pointer to next
         ListNode<E> next;
+
+        public ListNode<E> getPrevious() {
+            return previous;
+        }
+
+
+        public void setPrevious(ListNode<E> previous) {
+            this.previous = previous;
+        }
+
+        ListNode<E> previous;
         E data;
 
         public ListNode(E data) {
@@ -131,6 +254,8 @@ public class ListOfLinks<E> {
         public void setNext(ListNode<E> next) {
             this.next = next;
         }
+
+
 
         public E getData() {
             return data;

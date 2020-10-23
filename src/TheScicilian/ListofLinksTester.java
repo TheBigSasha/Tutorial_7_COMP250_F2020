@@ -4,20 +4,29 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class ListofLinksTester {
+
+    //We expect:
+    //O(1) - getFaster(end), getFaster(start), get(start)
+    //O(N) - getFaster(mid), get(mid), get(end)
+    //O(1) - enqueue(), dequeue(), push(), pop()
+
     public static void main(String args[]){
+        testGetFaster();
+        testQueueMethods();
+        testStackMethods();
         for(int i = 0; i < 1500; i++){
             if(!testRemoveFromSizeN(i)) System.out.println("Test failed to remove at size " + i);
         }
 
         ListOfLinks<String> tested = new ListOfLinks<>();
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 10000; i+=100){
             long startTime = System.nanoTime();
             fillList(i*15 + 1, tested);
             long endTime = System.nanoTime();
             long startTime2 = System.nanoTime();
             Object first = tested.getFirst();
             long endTime2 = System.nanoTime();
-            System.out.println("Slow one, probably O(n) : " + (endTime - startTime) + "             Fast one O(1) : " + (endTime2 - startTime2));
+            System.out.println("Mid Slow : " + getFromMiddle(i) + " Mid Fast : " + getFromMiddleFaster(i) + " End Fast : " + getFromEndFaster(i) +  " End Slow : " + getFromEnd(i) + " Start Fast : " + getFromStartFaster(i) + " Start Slow : " + getFromStart(i) );
 
 
             tested = new ListOfLinks<>();
@@ -26,16 +35,88 @@ public class ListofLinksTester {
 
     }
 
-    public static void fillList(int numberOfThings, ListOfLinks<String> list){
+    public static void fillList(int numberOfThings, ListOfLinks<String> list, boolean isNull){
         Random rand = new Random();
         for(int i = 0; i < numberOfThings; i++){
-            if(rand.nextInt(50) == 2){//This makes it spicy
-                list.add(null);
+            if(rand.nextInt(50) == 2 && isNull){//This makes it spicy
+                list.addFirst(null);
             }else{
-                list.add("Test " + rand.nextInt(5555) +" " + i);
+                list.addFirst("Test " + rand.nextInt(5555) +" " + i);
             }
         }
     }
+
+
+    public static void fillList(int numberOfThings, ListOfLinks<String> list){
+        Random rand = new Random();
+        for(int i = 0; i < numberOfThings; i++){
+
+                list.addFirst("Test " + rand.nextInt(5555) +" " + i);
+        }
+    }
+
+    private static long getFromMiddle(int size){
+        if(size < 1) size = 2;
+        ListOfLinks<String> myList = new ListOfLinks<>();
+        fillList((int) size, myList);
+        long startTime = System.nanoTime();
+        myList.get(size/2);
+        long endTime = System.nanoTime();
+        return endTime - startTime;
+    }
+
+    private static long getFromMiddleFaster(int size){
+        if(size < 1) size = 2;
+        ListOfLinks<String> myList = new ListOfLinks<>();
+        fillList((int) size, myList);
+        long startTime = System.nanoTime();
+        myList.getFaster(size/2);
+        long endTime = System.nanoTime();
+        return endTime - startTime;
+    }
+
+    private static long getFromStartFaster(int size){
+        if(size < 1) size = 2;
+        ListOfLinks<String> myList = new ListOfLinks<>();
+        fillList((int) size, myList);
+        long startTime = System.nanoTime();
+        myList.getFaster(0);
+        long endTime = System.nanoTime();
+        return endTime - startTime;
+    }
+
+    private static long getFromStart(int size){
+        if(size < 1) size = 2;
+        ListOfLinks<String> myList = new ListOfLinks<>();
+        fillList((int) size, myList);
+        long startTime = System.nanoTime();
+        myList.get(0);
+        long endTime = System.nanoTime();
+        return endTime - startTime;
+    }
+
+    private static long getFromEnd(int size){
+        if(size < 1) size = 2;
+        ListOfLinks<String> myList = new ListOfLinks<>();
+        fillList((int) size, myList);
+        long startTime = System.nanoTime();
+        myList.get(size - 1);
+        long endTime = System.nanoTime();
+        return endTime - startTime;
+    }
+
+    private static long getFromEndFaster(int size){
+        if(size < 1) size = 2;
+        ListOfLinks<String> myList = new ListOfLinks<>();
+        fillList((int) size, myList);
+        long startTime = System.nanoTime();
+        myList.getFaster(size - 1);
+        long endTime = System.nanoTime();
+        return endTime - startTime;
+    }
+
+
+
 
     private static boolean testRemoveFromEmpty(){
         try {
@@ -102,6 +183,45 @@ public class ListofLinksTester {
     }
 
     private static void testStackMethods(){
+        CoolStack<Integer> nums = new CoolStack<>();
+        Integer one = 1;
+        Integer two = 2;
+        Integer three = 3;
+        nums.push(one);
+        nums.push(two);
+        nums.push(three);
+        for(Integer i : nums){
+            System.out.println("Stack test iterator <expected 1 2 3>    " + i);
+        }
+        for(int i = 0; i < nums.size(); i++){
+            System.out.println("Stack test for loop <expected 1 2 3>    " +nums.get(i));
+        }
+        while(!nums.isEmpty()) {
+            System.out.println("Stack test pop <expected 3 2 1>         " +nums.pop());
+        }
+    }
+
+    private static void testQueueMethods(){
+        CoolQueue<Integer> nums = new CoolQueue<>();
+        Integer one = 1;
+        Integer two = 2;
+        Integer three = 3;
+        nums.enqueue(one);
+        nums.enqueue(two);
+        nums.enqueue(three);
+
+        while(!nums.isEmpty()) {
+            System.out.println("Queue test <expected 1 2 3>             " +           nums.dequeue());
+        }
+    }
+
+    private static void testGetFaster(){
+        ListOfLinks<String> list = new ListOfLinks<>();
+        fillList(100, list);
+        for(int i = 0; i < list.size(); i++){
+            if(!list.get(i).equals(list.getFaster(i))) System.out.println("ERROR AT INDEX " + i);
+        }
+
 
     }
 
