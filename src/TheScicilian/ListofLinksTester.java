@@ -1,10 +1,13 @@
 package TheScicilian;
 
-import java.util.Random;
-import java.util.Scanner;
+import RuntimeTester.Visualizer;
+import RuntimeTester.benchmark;
+
+import java.util.*;
 
 public class ListofLinksTester {
     public static void main(String args[]){
+        testQueueMethods();
         for(int i = 0; i < 1500; i++){
             if(!testRemoveFromSizeN(i)) System.out.println("Test failed to remove at size " + i);
         }
@@ -23,8 +26,13 @@ public class ListofLinksTester {
             tested = new ListOfLinks<>();
         }
 
+        Visualizer.launch(ListofLinksTester.class);
+
 
     }
+
+
+
 
     public static void fillList(int numberOfThings, ListOfLinks<String> list){
         Random rand = new Random();
@@ -101,8 +109,98 @@ public class ListofLinksTester {
 
     }
 
-    private static void testStackMethods(){
-
+    @benchmark(name="our stack's push")
+    public static long pushTest(long input){
+        //We make a stack and fill it to the SIZE which is INPUT
+        Stack<Integer> s = new Stack<Integer>();
+        Random rand = new Random();
+        for(int i = 0; i < input; i++){//this for loop uses the Iterator in the Iterable array test
+            s.push(rand.nextInt());
+        }
+        int added = rand.nextInt();
+        long startTime = System.nanoTime();
+        s.push(added);
+        long endTime = System.nanoTime();
+        return endTime-startTime;
     }
+
+    @benchmark(name="our stack's pop")
+    public static long popTest(long input){
+        //We make a stack and fill it to the SIZE which is INPUT
+        Stack<Integer> s = new Stack<Integer>();
+        Random rand = new Random();
+        for(int i = 0; i < input; i++){//this for loop uses the Iterator in the Iterable array test
+            s.push(rand.nextInt());
+        }
+        long startTime = System.nanoTime();
+        s.pop();
+        long endTime = System.nanoTime();
+        return endTime-startTime;
+    }
+
+    @benchmark(name = "our get")
+    public static long getTest(long input){
+        //We make a stack and fill it to the SIZE which is INPUT
+        Stack<Integer> s = new Stack<Integer>();
+        Random rand = new Random();
+        for(int i = 0; i < input; i++){//this for loop uses the Iterator in the Iterable array test
+            s.push(rand.nextInt());
+        }
+        long startTime = System.nanoTime();
+        s.get((int)  (2 *input )/ 3);
+        long endTime = System.nanoTime();
+        return endTime-startTime;
+    }
+
+    @benchmark(name = "our getFaster")
+    public static long getFasterTest(long input){
+        //We make a stack and fill it to the SIZE which is INPUT
+        Stack<Integer> s = new Stack<Integer>();
+        Random rand = new Random();
+        for(int i = 0; i < input; i++){//this for loop uses the Iterator in the Iterable array test
+            s.push(rand.nextInt());
+        }
+        long startTime = System.nanoTime();
+        s.getFaster((int) (2 * input) / 3);
+        long endTime = System.nanoTime();
+        return endTime-startTime;
+    }
+
+    private static void testStackMethods(){
+        Integer[] test = new Integer[]{1,2,3,4,5};
+        Stack<Integer> s = new Stack<Integer>();
+        //This
+        for(Integer i : test){//this for loop uses the Iterator in the Iterable array test
+            System.out.println(i);
+            s.push(i);
+        }
+
+        for(Integer i : s){
+            System.out.println(i);
+        }
+
+        for(int i = 0; i < test.length; i++){
+            System.out.println(s.pop());
+        }
+    }
+    private static void testQueueMethods(){
+        Integer[] test = new Integer[]{1,2,3,4,5};
+        Queue<Integer> s = new Queue<>();
+        //This
+        for(Integer i : test){//this for loop uses the Iterator in the Iterable array test
+            System.out.println(i);
+            s.enqueue(i);
+        }
+
+        for(Integer i : s){
+            System.out.println(i);
+        }
+
+        for(int i = 0; i < test.length; i++){
+            System.out.println(s.dequeue());
+        }
+    }
+
+
 
 }

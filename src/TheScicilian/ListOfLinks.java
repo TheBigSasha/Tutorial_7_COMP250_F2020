@@ -1,13 +1,16 @@
 package TheScicilian;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class ListOfLinks<E> {
+public class ListOfLinks<E> implements Iterable<E>{
     private ListNode<E> head;
+    private ListNode<E> tail;
     private int size;
 
     public ListOfLinks() {
         head = null;
+        tail = null;
         size = 0;
     }
 
@@ -16,8 +19,8 @@ public class ListOfLinks<E> {
     }
 
 
-    public ListNode<E> getFirst() {
-        return head;
+    public E getFirst() {
+        return head.data;
     }
 
     public int size() {                                          //Returns the number of elements in the list by iterating thru and counting
@@ -28,7 +31,6 @@ public class ListOfLinks<E> {
 
     public E get(int index) throws IndexOutOfBoundsException {   //Gets a node at an index
         if(index > this.size() - 1 || index < 0) throw new IndexOutOfBoundsException("Index " + index + " out of bounds for list of size " + size());
-
         int counter = 0;
         E data = null;
         ListNode<E> temp = head;
@@ -41,6 +43,37 @@ public class ListOfLinks<E> {
         }
         return null;
     }
+
+    public E getFaster(int index) throws IndexOutOfBoundsException {   //Gets a node at an index
+        if(index > this.size() - 1 || index < 0) throw new IndexOutOfBoundsException("Index " + index + " out of bounds for list of size " + size());
+        if(index > size/2){ //start from end because closer to end
+            int counter = size - 1;
+            E data = null;
+            ListNode<E> temp = tail;
+            while(temp != null){
+                if(counter == index){
+                    return temp.getData();
+                }
+                temp = temp.previous;
+                counter--;
+            }
+            return null;
+        }else{ //start from start because start is closer to index
+            int counter = 0;
+            E data = null;
+            ListNode<E> temp = head;
+            while(temp != null){
+                if(counter == index){
+                    return temp.getData();
+                }
+                temp = temp.next;
+                counter++;
+            }
+            return null;
+        }
+
+    }
+
 
     private ListNode<E> getNode(int index) throws IndexOutOfBoundsException {   //Gets a node at an index
 
@@ -59,14 +92,26 @@ public class ListOfLinks<E> {
         return null;
     }
 
+    /**
+     * Adds to the end of the list
+     * @param data stuff to add
+     */
     public void add(E data) {                                    //sets head if head is null, else adds a node'
         ListNode<E> newNode = new ListNode<>(data);         // We create a new node from the data we are given
         if(this.isEmpty() || this.head == null){
             this.head = newNode;
-            size++;
-            return;
+            this.head.next = tail;
+            this.tail = head;
+        }else if(this.size == 1){
+            this.head.next = newNode;
+            newNode.previous = head;
+            tail = newNode;
+        }else{
+            this.tail.next = newNode;
+            newNode.previous = this.tail;
+            this.tail = newNode;
         }
-        getLastNode().setNext(newNode);                     // We go to the last node and change the reference from null to the new node
+
         size++;                                             // We track our size
     }
 
@@ -80,7 +125,18 @@ public class ListOfLinks<E> {
     }
 
     public E getLast(){
-        return get(size() - 1);
+        return tail.getData();
+    }
+
+    public void removeFirst(){
+        if(this.size <=1){
+            head = null;
+            tail = null;
+        }else{
+            this.head = this.head.next;
+            this.head.previous = null;
+        }
+        size--;
     }
 
     public E pop(){     //Slow and bad, you should use a doubly linked list :)
@@ -96,7 +152,9 @@ public class ListOfLinks<E> {
         if(this.size == 1){
             this.head = null;
         }else {
-            this.getNode(size() - 2).setNext(null);
+            tail.previous.next = null;
+            tail = tail.previous;
+
         }
         size--;
     }
@@ -114,9 +172,57 @@ public class ListOfLinks<E> {
         return sb.toString();                              //return our thing
     }
 
+    /**
+     * Returns an iterator over elements of type {@code T}.
+     *
+     * @return an Iterator.
+     */
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+
+            int counter =0;
+
+            /**
+             * Returns {@code true} if the iteration has more elements.
+             * (In other words, returns {@code true} if {@link #next} would
+             * return an element rather than throwing an exception.)
+             *
+             * @return {@code true} if the iteration has more elements
+             */
+            @Override
+            public boolean hasNext() {
+                return counter < size;
+            }
+
+            /**
+             * Returns the next element in the iteration.
+             *
+             * @return the next element in the iteration
+             */
+            @Override
+            public E next() {
+                E cur = getFaster(counter);
+                counter++;
+                return cur;
+            }
+        };
+    }
+
 
     private class ListNode<E> {                                  //List node: stores a bit of data and a pointer to next
-        ListNode<E> next;
+        private ListNode<E> next;
+
+
+        public ListNode<E> previous() {
+            return previous;
+        }
+
+        public void setPrevious(ListNode<E> previous) {
+            this.previous = previous;
+        }
+
+        private ListNode<E> previous;
         E data;
 
         public ListNode(E data) {
